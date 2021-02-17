@@ -7,6 +7,7 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
+using IPA.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,11 +46,14 @@ namespace CoverColorSaber
             Plugin.Log.Info("Setting up colors");
             if (leftImg == null)
             {
-                ImageView Use = Resources.FindObjectsOfTypeAll<PreviousColorPanelController>().First((PreviousColorPanelController x) => { return x.name == "PreviousColorPanelController"; }).transform.Find("ColorImage").GetComponent<ImageView>();
-                leftImg = Instantiate(Use.gameObject, Colors.transform, false).GetComponent<ImageView>();
-                rightImg = Instantiate(Use.gameObject, Colors.transform, false).GetComponent<ImageView>();
-                obsImg = Instantiate(Use.gameObject, Colors.transform, false).GetComponent<ImageView>();
-                Colors.transform.localScale = new Vector3(4f, 4f, 4f);
+                GameObject Use = Instantiate(Resources.FindObjectsOfTypeAll<EditColorSchemeController>().First((EditColorSchemeController x) => { return x.name == "EditColorSchemeController"; }).transform.Find("Content").Find("ColorSchemeColorsToggleGroup").Find("SaberA").gameObject);
+                Destroy(Use.GetComponent<Toggle>());
+                Destroy(Use.transform.Find("Selection").gameObject);
+                Destroy(Use.transform.Find("Highlight").gameObject);
+                leftImg = Instantiate(Use.gameObject, Colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                rightImg = Instantiate(Use.gameObject, Colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                obsImg = Instantiate(Use.gameObject, Colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                Destroy(Use);
                 HorizontalLayoutGroup layout = Colors.GetComponent<HorizontalLayoutGroup>();
                 layout.childForceExpandWidth = false;
                 layout.childForceExpandHeight = false;

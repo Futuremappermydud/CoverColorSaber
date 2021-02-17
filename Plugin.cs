@@ -39,7 +39,7 @@ namespace CoverColorSaber
 
         private void MenuLoadFresh(ScenesTransitionSetupDataSO data)
         {
-            GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Panel.bsml", Menu.instance);
+            GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Settings.Panel.bsml", Menu.instance);
             /*var floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120, 52f), false,
                                                                      new Vector3(0f, 0.05f, 1.4f),
                                                                      new Quaternion(90f, 0f, 0f, 0f));
