@@ -115,7 +115,7 @@
   <ItemGroup>
     <Compile Include="Hooks.cs" />
     <Compile Include="CoverColorManager.cs" />
-    <Compile Include="Menu.cs" />
+    <Compile Include="Settings\Menu.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,10 +127,7 @@
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
     <None Include="Directory.Build.targets" Condition="Exists('Directory.Build.targets')" />
     <None Include="CoverColorSaber.csproj.user" Condition="Exists('CoverColorSaber.csproj.user')" />
-    <EmbeddedResource Include="Panel.bsml" />
-    <EmbeddedResource Include="Menu.bsml">
-      <DependentUpon>Menu.cs</DependentUpon>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Settings\Panel.bsml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BeatSaberModdingTools.Tasks">
