@@ -57,10 +57,10 @@ namespace CoverColorSaber
         }
         public static async Task<ColorScheme> GetSchemeFromCoverImage(Texture2D tex, string levelID)
         {
-            
+            if (Cache.ContainsKey(levelID)) return Cache[levelID];
             List <Color> Colors = GetColors(tex);
             //Colors = GetCutColors(Colors);
-            Plugin.Log.Info(Colors.Count.ToString());
+            //Plugin.Log.Info(Colors.Count.ToString());
 
             Color LastColor1 = Color.white;
             float LastAverage1 = 255;
@@ -95,14 +95,13 @@ namespace CoverColorSaber
                     }
                 }
             });
-            Plugin.Log.Info((LastColor1 * 255).ToString());
-            Plugin.Log.Info((LastColor2 * 255).ToString());   
-            Plugin.Log.Info(GetNearX(LastColor1 * 255, 25, 0).ToString());
-            Plugin.Log.Info(GetNearX(LastColor2 * 255, 25, 255).ToString());
+            //Plugin.Log.Info((LastColor1 * 255).ToString());
+            //Plugin.Log.Info((LastColor2 * 255).ToString());   
+            //Plugin.Log.Info(GetNearX(LastColor1 * 255, 25, 0).ToString());
+            //Plugin.Log.Info(GetNearX(LastColor2 * 255, 25, 255).ToString());
             ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, LastColor1, LastColor2, LastColor1, LastColor2, true, LastColor1, LastColor2, Colors[Colors.Count/2]);
             
-            
-            Cache.TryRemove(levelID, out _);
+            //Cache.TryRemove(levelID, out _);
             Cache.TryAdd(levelID, scheme);
             return scheme;
         }
