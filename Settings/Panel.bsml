@@ -3,6 +3,6 @@
     <text id='SongNameText' font-size='4.5' color='white' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' align='Center'/>
     <horizontal id='Colors' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
     </horizontal>
-    <checkbox-setting text='Enabled' preferred-width='34' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
+    <checkbox-setting id='toggle' text='Enabled' preferred-width='34' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
   </vertical>
 </bg>

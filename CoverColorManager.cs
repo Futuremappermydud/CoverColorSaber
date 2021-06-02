@@ -5,14 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Concurrent;
-using static PlayerSaveData;
-using Random = UnityEngine.Random;
+using ColorThief;
+using Color = UnityEngine.Color;
 
 namespace CoverColorSaber
 {
+    //meh monkas class
     static class CoverColorManager
     {
         internal static ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();
+        internal static ConcurrentDictionary<string, List<QuantizedColor>> QuantCache = new ConcurrentDictionary<string, List<QuantizedColor>>();
         public static float GetAverage(this Color col)
         {
             float avg = (col.r + col.g + col.b) / 3;
@@ -55,54 +57,33 @@ namespace CoverColorSaber
         {
             return tex.GetPixels().ToList();
         }
-        public static async Task<ColorScheme> GetSchemeFromCoverImage(Texture2D tex, string levelID)
+        public static ColorScheme GetSchemeFromCoverImage(Texture2D tex, string levelID, out List<QuantizedColor> quantizedColors)
         {
-            if (Cache.ContainsKey(levelID)) return Cache[levelID];
-            List <Color> Colors = GetColors(tex);
-            //Colors = GetCutColors(Colors);
-            //Plugin.Log.Info(Colors.Count.ToString());
-
-            Color LastColor1 = Color.white;
-            float LastAverage1 = 255;
-            await Task.Run(() =>
-             {
-                for (int i = 0; i < Colors.Count; i++)
-                {
-                    Color CurrentColor = Colors[i];
-                    float CurrentAverage = CurrentColor.GetAverage();
-                    //Console.WriteLine(CurrentAverage.ToString() + " " + CurrentColor.name);
-                    if (LastAverage1 > CurrentAverage && !LastColor1.Equals(CurrentColor) || GetNearX(CurrentColor * 255, 25, 0))
-                    {
-                        LastColor1 = CurrentColor;
-                        LastAverage1 = CurrentAverage;
-                    }
-                }
-             });
-
-            Color LastColor2 = Color.black;
-            float LastAverage2 = 0;
-            await Task.Run(() =>
+            quantizedColors = new List<QuantizedColor>();
+            if (QuantCache.ContainsKey(levelID))
             {
-                for (int i = 0; i < Colors.Count; i++)
-                {
-                    Color CurrentColor = Colors[i];
-                    float CurrentAverage = CurrentColor.GetAverage();
-                    //Console.WriteLine(CurrentAverage.ToString() + " " + CurrentColor.name);
-                    if (LastAverage2 < CurrentAverage && !LastColor2.Equals(CurrentColor) || GetNearX(CurrentColor * 255, 25, 255))
-                    {
-                        LastColor2 = CurrentColor;
-                        LastAverage2 = CurrentAverage;
-                    }
-                }
-            });
-            //Plugin.Log.Info((LastColor1 * 255).ToString());
-            //Plugin.Log.Info((LastColor2 * 255).ToString());   
-            //Plugin.Log.Info(GetNearX(LastColor1 * 255, 25, 0).ToString());
-            //Plugin.Log.Info(GetNearX(LastColor2 * 255, 25, 255).ToString());
-            ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, LastColor1, LastColor2, LastColor1, LastColor2, true, LastColor1, LastColor2, Colors[Colors.Count/2]);
+                Plugin.Log.Info("Has Quant Cached");
+                QuantCache.TryGetValue(levelID, out quantizedColors);
+            }
+            if (Cache.ContainsKey(levelID)) return Cache[levelID];
+            Color LeftColor;
+            Color RightColor;
+            Color ObsColor;
+
+            ColorThief.ColorThief thief = new ColorThief.ColorThief();
+            List<QuantizedColor> colors;
+
+            colors = thief.GetPalette(tex);
+
+            LeftColor = colors[0].UnityColor;
+            RightColor = colors[1].UnityColor;
+            ObsColor = colors[2].UnityColor;
+
+            ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", true, LeftColor, RightColor, LeftColor, RightColor, false, LeftColor, RightColor, ObsColor);
             
-            //Cache.TryRemove(levelID, out _);
             Cache.TryAdd(levelID, scheme);
+            QuantCache.TryAdd(levelID, colors);
+            quantizedColors = colors;
             return scheme;
         }
     }

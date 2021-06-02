@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using System.Reflection;
 using BeatSaberMarkupLanguage.GameplaySetup;
+using System.Collections.Generic;
 
 namespace CoverColorSaber
 {
@@ -26,26 +27,19 @@ namespace CoverColorSaber
             Instance = this;
             Log = logger;
             Log.Info("CoverColorSaber initialized.");
-            BSEvents.earlyMenuSceneLoadedFresh += MenuLoadFresh;
-            BSEvents.levelSelected += LevelSelected;
             new Harmony("CoverSaber").PatchAll(Assembly.GetExecutingAssembly());
+            GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Settings.Panel.bsml", Menu.instance);
         }
         [OnExit]
-        public void OnApplicationStart()
+        public void OnApplicationExit()
         {
-            BSEvents.lateMenuSceneLoadedFresh -= MenuLoadFresh;
             BSEvents.levelSelected -= LevelSelected;
         }
 
-        private void MenuLoadFresh(ScenesTransitionSetupDataSO data)
+        [OnStart]
+        public void OnApplicationStart()
         {
-            GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Settings.Panel.bsml", Menu.instance);
-            /*var floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(120, 52f), false,
-                                                                     new Vector3(0f, 0.05f, 1.4f),
-                                                                     new Quaternion(90f, 0f, 0f, 0f));
-            floatingScreen.transform.rotation = Quaternion.Euler(new Vector3(90f, 0f, 0f));
-            panel = BeatSaberUI.CreateViewController<Panel>();
-            floatingScreen.SetRootViewController(panel, AnimationType.In);*/
+            BSEvents.levelSelected += LevelSelected;
         }
         static internal IPreviewBeatmapLevel last;
         public async void LevelSelected(LevelCollectionViewController lcvc, IPreviewBeatmapLevel level)
@@ -54,7 +48,7 @@ namespace CoverColorSaber
             Texture2D tex = null;
             //Log.Info("Level Selected");
             tex = (await level.GetCoverImageAsync(System.Threading.CancellationToken.None)).texture;
-            if (!(level is CustomPreviewBeatmapLevel))
+            if (!(level is CustomPreviewBeatmapLevel) || tex == null)
             {
                 RenderTexture tmp = RenderTexture.GetTemporary(
                                     tex.width,
@@ -74,10 +68,12 @@ namespace CoverColorSaber
                 tex = myTexture2D;
             }
 
-            ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, Color.white, Color.white, Color.white, Color.white, true, Color.white, Color.white, Color.white);
-            await Task.Run(async ()=> { scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID)); });
+            ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", false, Color.white, Color.white, Color.white, Color.white, true, Color.white, Color.white, Color.white);
+            List<ColorThief.QuantizedColor> colors = new List<ColorThief.QuantizedColor>();
+            await Task.Run(() => { scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID, out colors)); });
+            Log.Info("Colors " + colors.Count.ToString());
             Menu.instance.songName = level.songName;
-            Menu.instance.SetColors(scheme);
+            Menu.instance.SetColors(colors, scheme, tex, level.levelID);
         }
     }
 }
