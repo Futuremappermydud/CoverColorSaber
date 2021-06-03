@@ -10,70 +10,39 @@ using Color = UnityEngine.Color;
 
 namespace CoverColorSaber
 {
+    public class ColorDataResult
+    {
+        public ColorScheme scheme;
+        public List<QuantizedColor> colors;
+    }
     //meh monkas class
     static class CoverColorManager
     {
         internal static ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();
         internal static ConcurrentDictionary<string, List<QuantizedColor>> QuantCache = new ConcurrentDictionary<string, List<QuantizedColor>>();
-        public static float GetAverage(this Color col)
+        public async static Task<ColorDataResult> GetSchemeFromCoverImage(Texture2D tex, string levelID)
         {
-            float avg = (col.r + col.g + col.b) / 3;
-            return avg;
-        }
-
-        public static bool GetNearX(this Color col, float maxDist, float X)
-        {
-            float distr = Mathf.Abs(X - col.r);
-            float distg = Mathf.Abs(X - col.g);
-            float distb = Mathf.Abs(X - col.b);
-            //Plugin.Log.Info("Distr: " + distr.ToString());
-            //Plugin.Log.Info("Distg: " + distg.ToString());
-            //Plugin.Log.Info("Distb: " + distb.ToString());
-            bool ShouldRetTrue = false;
-            if(distr < maxDist || distg < maxDist || distb < maxDist)
-            {
-                ShouldRetTrue = true;
-            }   
-            if(col.r == X || col.g == X || col.b == X)
-            {
-                ShouldRetTrue = true;   
-            }
-            return ShouldRetTrue;
-        }
-        public static float distanceAverage(this Color col1, Color col2)
-        {
-            float avg1 = col1.GetAverage();
-            float avg2 = col2.GetAverage();
-            return Math.Abs(avg1 - avg2);
-        }
-        public static List<Color> GetCutColors(List<Color> orig)
-        {
-            List<Color> New = new List<Color>();
-            New = orig.Where((Color col) => { return col.distanceAverage(Color.white) > 25f || col.distanceAverage(Color.black) > 25f;}).ToList();
-            return New;
-        }
-
-        public static List<Color> GetColors(Texture2D tex)
-        {
-            return tex.GetPixels().ToList();
-        }
-        public static ColorScheme GetSchemeFromCoverImage(Texture2D tex, string levelID, out List<QuantizedColor> quantizedColors)
-        {
-            quantizedColors = new List<QuantizedColor>();
+            ColorDataResult result = new ColorDataResult();
+            var quantizedColors = new List<QuantizedColor>();
             if (QuantCache.ContainsKey(levelID))
             {
-                Plugin.Log.Info("Has Quant Cached");
                 QuantCache.TryGetValue(levelID, out quantizedColors);
             }
-            if (Cache.ContainsKey(levelID)) return Cache[levelID];
+            if (Cache.ContainsKey(levelID))
+            {
+                result.colors = quantizedColors;
+                result.scheme = Cache[levelID];
+                return result;
+            }
+
             Color LeftColor;
             Color RightColor;
             Color ObsColor;
 
             ColorThief.ColorThief thief = new ColorThief.ColorThief();
-            List<QuantizedColor> colors;
+            List<QuantizedColor> colors = new List<QuantizedColor>();
 
-            colors = thief.GetPalette(tex);
+            await Task.Run(() => { colors = thief.GetPalette(tex); });
 
             LeftColor = colors[0].UnityColor;
             RightColor = colors[1].UnityColor;
@@ -84,7 +53,9 @@ namespace CoverColorSaber
             Cache.TryAdd(levelID, scheme);
             QuantCache.TryAdd(levelID, colors);
             quantizedColors = colors;
-            return scheme;
+            result.scheme = scheme;
+            result.colors = colors;
+            return result;
         }
     }
 }

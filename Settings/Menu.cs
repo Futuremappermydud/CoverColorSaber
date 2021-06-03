@@ -33,7 +33,17 @@ namespace CoverColorSaber
             }
         }
         [UIValue("enabled")]
-        public bool schemeEnabled = true;
+        public bool schemeEnabled
+        { 
+            get 
+            {
+                return PluginConfig.Instance.enabled;
+            } 
+            set
+            {
+                PluginConfig.Instance.enabled = value;
+            }
+        }
 
         [UIObject("Colors")] private GameObject Colors = null;
 
