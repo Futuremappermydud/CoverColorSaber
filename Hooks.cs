@@ -1,15 +1,11 @@
-﻿using BS_Utils.Utilities;
-using HarmonyLib;
-using HMUI;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace CoverColorSaber
 {
     [HarmonyPatch(typeof(StandardLevelScenesTransitionSetupDataSO), "Init")]
     public class SetColorSchemePatch
     {
+        // ReSharper disable once UnusedMember.Local
         private static void Prefix(ref IDifficultyBeatmap difficultyBeatmap, ref ColorScheme overrideColorScheme)
         {
             if(Settings.Menu.instance.SchemeEnabled)

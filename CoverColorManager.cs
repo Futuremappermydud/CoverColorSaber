@@ -11,7 +11,6 @@ namespace CoverColorSaber
         public ColorScheme Scheme;
         public List<QuantizedColor> Colors;
     }
-    //meh monkas class
     internal static class CoverColorManager
     {
         internal static readonly ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();

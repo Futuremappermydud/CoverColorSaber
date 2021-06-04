@@ -7,6 +7,7 @@ using HarmonyLib;
 using System.Reflection;
 using BeatSaberMarkupLanguage.GameplaySetup;
 using System.Collections.Generic;
+using CoverColorSaber.Configuration;
 using IPA.Config.Stores;
 
 namespace CoverColorSaber

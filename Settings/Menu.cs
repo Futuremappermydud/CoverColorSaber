@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BeatSaberMarkupLanguage.Attributes;
+using CoverColorSaber.Configuration;
 using HMUI;
 using IPA.Utilities;
 using TMPro;
@@ -37,8 +38,8 @@ namespace CoverColorSaber.Settings
         [UIValue("enabled")]
         public bool SchemeEnabled
         { 
-            get => PluginConfig.Instance.enabled;
-            set => PluginConfig.Instance.enabled = value;
+            get => PluginConfig.Instance.Enabled;
+            set => PluginConfig.Instance.Enabled = value;
         }
 
         [UIObject("Colors")] private readonly GameObject colors = null;
@@ -172,6 +173,7 @@ namespace CoverColorSaber.Settings
                     templateImg = Instantiate(orig.Find("SaberA").gameObject);
                     obsTemplateImg = Instantiate(orig.Find("Obstacles").gameObject);
                     DontDestroyOnLoad(templateImg);
+                    DontDestroyOnLoad(obsTemplateImg);
                 }
 
                 leftImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
@@ -179,9 +181,9 @@ namespace CoverColorSaber.Settings
                 var hover = parent.gameObject.AddComponent<HoverHint>();
                 hover.text = "Left Saber/Left Lights Color";
                 hover.SetField("_hoverHintController", Resources.FindObjectsOfTypeAll<HoverHintController>().First());
-                var leftTgle = parent.GetComponent<Toggle>();
-                leftTgle.isOn = true;
-                leftTgle.onValueChanged.AddListener(b => { ToggleSelected(b, leftTgle); });
+                var leftToggle = parent.GetComponent<Toggle>();
+                leftToggle.isOn = true;
+                leftToggle.onValueChanged.AddListener(b => { ToggleSelected(b, leftToggle); });
                 parent.gameObject.name = "saberA";
 
                 rightImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
@@ -189,8 +191,8 @@ namespace CoverColorSaber.Settings
                 var hover2 = parent1.gameObject.AddComponent<HoverHint>();
                 hover2.text = "Right Saber/Right Lights Color";
                 hover2.SetField("_hoverHintController", Resources.FindObjectsOfTypeAll<HoverHintController>().First());
-                var rightTgle = parent1.GetComponent<Toggle>();
-                rightTgle.onValueChanged.AddListener(b => { ToggleSelected(b, rightTgle); });
+                var rightToggle = parent1.GetComponent<Toggle>();
+                rightToggle.onValueChanged.AddListener(b => { ToggleSelected(b, rightToggle); });
                 parent1.gameObject.name = "saberB";
 
                 obsImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
