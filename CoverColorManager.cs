@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Concurrent;
@@ -12,26 +9,26 @@ namespace CoverColorSaber
 {
     public class ColorDataResult
     {
-        public ColorScheme scheme;
-        public List<QuantizedColor> colors;
+        public ColorScheme Scheme;
+        public List<QuantizedColor> Colors;
     }
     //meh monkas class
-    static class CoverColorManager
+    internal static class CoverColorManager
     {
-        internal static ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();
-        internal static ConcurrentDictionary<string, List<QuantizedColor>> QuantCache = new ConcurrentDictionary<string, List<QuantizedColor>>();
-        public async static Task<ColorDataResult> GetSchemeFromCoverImage(Texture2D tex, string levelID)
+        internal static readonly ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();
+        private static readonly ConcurrentDictionary<string, List<QuantizedColor>> PaletteCache = new ConcurrentDictionary<string, List<QuantizedColor>>();
+        public static async Task<ColorDataResult> GetSchemeFromCoverImage(Texture2D tex, string levelID)
         {
-            ColorDataResult result = new ColorDataResult();
-            var quantizedColors = new List<QuantizedColor>();
-            if (QuantCache.ContainsKey(levelID))
+            var result = new ColorDataResult();
+            var paletteColors = new List<QuantizedColor>();
+            if (PaletteCache.ContainsKey(levelID))
             {
-                QuantCache.TryGetValue(levelID, out quantizedColors);
+                PaletteCache.TryGetValue(levelID, out paletteColors);
             }
             if (Cache.ContainsKey(levelID))
             {
-                result.colors = quantizedColors;
-                result.scheme = Cache[levelID];
+                result.Colors = paletteColors;
+                result.Scheme = Cache[levelID];
                 return result;
             }
 
@@ -39,8 +36,8 @@ namespace CoverColorSaber
             Color RightColor;
             Color ObsColor;
 
-            ColorThief.ColorThief thief = new ColorThief.ColorThief();
-            List<QuantizedColor> colors = new List<QuantizedColor>();
+            var thief = new ColorThief.ColorThief();
+            var colors = new List<QuantizedColor>();
 
             await Task.Run(() => { colors = thief.GetPalette(tex); });
 
@@ -48,13 +45,12 @@ namespace CoverColorSaber
             RightColor = colors[1].UnityColor;
             ObsColor = colors[2].UnityColor;
 
-            ColorScheme scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", true, LeftColor, RightColor, LeftColor, RightColor, false, LeftColor, RightColor, ObsColor);
+            var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", true, LeftColor, RightColor, LeftColor, RightColor, false, LeftColor, RightColor, ObsColor);
             
             Cache.TryAdd(levelID, scheme);
-            QuantCache.TryAdd(levelID, colors);
-            quantizedColors = colors;
-            result.scheme = scheme;
-            result.colors = colors;
+            PaletteCache.TryAdd(levelID, colors);
+            result.Scheme = scheme;
+            result.Colors = colors;
             return result;
         }
     }

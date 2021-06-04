@@ -76,10 +76,10 @@ namespace ColorThief
 
         private IEnumerable<int> GetIntFromPixel(Texture2D bmp)
         {
-            Color32[] clrs = bmp.GetPixels32();
-            for(int i=0; i<clrs.Length; i++)
+            var clrs = bmp.GetPixels32();
+            for(var i=0; i<clrs.Length; i++)
             {
-                Color32 clr = clrs[i];
+                var clr = clrs[i];
                 yield return clr.b;
                 yield return clr.g;
                 yield return clr.r;

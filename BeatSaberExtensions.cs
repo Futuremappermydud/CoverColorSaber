@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
 
@@ -9,33 +8,33 @@ namespace CoverColorSaber
     public static class BeatSaberUIExtensions
     {
         #region Button Extensions
-        public static void SetButtonText(this Button _button, string _text)
+        public static void SetButtonText(this Button button, string text)
         {
-            HMUI.CurvedTextMeshPro textMesh = _button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
+            var textMesh = button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
             if (textMesh != null)
             {
-                textMesh.SetText(_text);
+                textMesh.SetText(text);
             }
         }
 
-        public static HMUI.CurvedTextMeshPro GetButtonText(this Button _button)
+        public static HMUI.CurvedTextMeshPro GetButtonText(this Button button)
         {
-            HMUI.CurvedTextMeshPro textMesh = _button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
+            var textMesh = button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
             return textMesh;
         }
 
-        public static void SetButtonTextSize(this Button _button, float _fontSize)
+        public static void SetButtonTextSize(this Button button, float fontSize)
         {
-            var txtMesh = _button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
+            var txtMesh = button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
             if (txtMesh != null)
             {
-                txtMesh.fontSize = _fontSize;
+                txtMesh.fontSize = fontSize;
             }
         }
 
-        public static void ToggleWordWrapping(this Button _button, bool enableWordWrapping)
+        public static void ToggleWordWrapping(this Button button, bool enableWordWrapping)
         {
-            var txtMesh = _button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
+            var txtMesh = button.GetComponentInChildren<HMUI.CurvedTextMeshPro>();
             if (txtMesh != null)
             {
                 txtMesh.enableWordWrapping = enableWordWrapping;
@@ -44,7 +43,7 @@ namespace CoverColorSaber
 
         public static void SetButtonBackgroundActive(this Button parent, bool active)
         {
-            HMUI.ImageView img = parent.GetComponentsInChildren<HMUI.ImageView>().Last(x => x.name == "BG");
+            var img = parent.GetComponentsInChildren<HMUI.ImageView>().Last(x => x.name == "BG");
             if (img != null)
             {
                 img.gameObject.SetActive(active);
@@ -53,7 +52,7 @@ namespace CoverColorSaber
 
         public static void SetButtonUnderlineColor(this Button parent, Color color)
         {
-            HMUI.ImageView img = parent.GetComponentsInChildren<HMUI.ImageView>().FirstOrDefault(x => x.name == "Underline");
+            var img = parent.GetComponentsInChildren<HMUI.ImageView>().FirstOrDefault(x => x.name == "Underline");
             if (img != null)
             {
                 img.color = color;
@@ -62,7 +61,7 @@ namespace CoverColorSaber
 
         public static void SetButtonBorder(this Button button, Color color)
         {
-            HMUI.ImageView img = button.GetComponentsInChildren<HMUI.ImageView>().FirstOrDefault(x => x.name == "Border");
+            var img = button.GetComponentsInChildren<HMUI.ImageView>().FirstOrDefault(x => x.name == "Border");
             if (img != null)
             {
                 img.color0 = color;

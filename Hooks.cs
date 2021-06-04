@@ -10,9 +10,9 @@ namespace CoverColorSaber
     [HarmonyPatch(typeof(StandardLevelScenesTransitionSetupDataSO), "Init")]
     public class SetColorSchemePatch
     {
-        static void Prefix(StandardLevelScenesTransitionSetupDataSO __instance, ref IDifficultyBeatmap difficultyBeatmap, ref ColorScheme overrideColorScheme)
+        private static void Prefix(ref IDifficultyBeatmap difficultyBeatmap, ref ColorScheme overrideColorScheme)
         {
-            if(Menu.instance.schemeEnabled)
+            if(Settings.Menu.instance.SchemeEnabled)
             {
                 CoverColorManager.Cache.TryGetValue(difficultyBeatmap.level.levelID, out overrideColorScheme);
             }

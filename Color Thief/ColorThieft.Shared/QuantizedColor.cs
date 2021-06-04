@@ -19,7 +19,7 @@ namespace ColorThief
         {
             get
             {
-                UnityEngine.Color color = UnityColor32;
+                var color = UnityColor32;
                 return color;
             }
         }

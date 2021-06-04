@@ -142,16 +142,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeatSaberExtensions.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\CMap.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\Color.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\HslColor.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\Mmcq.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\QuantizedColor.cs" />
+    <Compile Include="Color Thief\ColorThieft.Shared\VBox.cs" />
+    <Compile Include="Color Thief\Core\ColorThief.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="CoverColorManager.cs" />
-    <Compile Include="PointerTracker.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\CMap.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\Color.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\HslColor.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\Mmcq.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\QuantizedColor.cs" />
-    <Compile Include="Scripts\ColorThieft.Shared\VBox.cs" />
-    <Compile Include="Scripts\Core\ColorThief.cs" />
     <Compile Include="Settings\Menu.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\PluginConfig.cs" />
@@ -161,10 +160,13 @@
     <EmbeddedResource Include="manifest.json" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Color Thief\LICENSE" />
+    <None Include="Color Thief\README.md" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
     <None Include="Directory.Build.targets" Condition="Exists('Directory.Build.targets')" />
     <None Include="CoverColorSaber.csproj.user" Condition="Exists('CoverColorSaber.csproj.user')" />
     <EmbeddedResource Include="Settings\Panel.bsml" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BeatSaberModdingTools.Tasks">
