@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Concurrent;
 using ColorThief;
-using Color = UnityEngine.Color;
 
 namespace CoverColorSaber
 {
@@ -32,20 +31,16 @@ namespace CoverColorSaber
                 return result;
             }
 
-            Color LeftColor;
-            Color RightColor;
-            Color ObsColor;
-
             var thief = new ColorThief.ColorThief();
             var colors = new List<QuantizedColor>();
 
             await Task.Run(() => { colors = thief.GetPalette(tex); });
 
-            LeftColor = colors[0].UnityColor;
-            RightColor = colors[1].UnityColor;
-            ObsColor = colors[2].UnityColor;
+            var leftColor = colors[0].UnityColor;
+            var rightColor = colors[1].UnityColor;
+            var obsColor = colors[2].UnityColor;
 
-            var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", true, LeftColor, RightColor, LeftColor, RightColor, false, LeftColor, RightColor, ObsColor);
+            var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", true, leftColor, rightColor, leftColor, rightColor, false, leftColor, rightColor, obsColor);
             
             Cache.TryAdd(levelID, scheme);
             PaletteCache.TryAdd(levelID, colors);
