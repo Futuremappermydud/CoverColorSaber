@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BeatSaberMarkupLanguage.Attributes;
 using CoverColorSaber.Configuration;
@@ -35,6 +36,7 @@ namespace CoverColorSaber.Settings
                 //Plugin.Log.Info("Settings Song Name to " + value);
             }
         }
+        
         [UIValue("enabled")]
         public bool SchemeEnabled
         { 
@@ -148,7 +150,7 @@ namespace CoverColorSaber.Settings
             currentlevelID = levelID;
             currentPaletteColors = paletteColors;
             currentTex = coverImg;
-            this.scheme = setScheme;
+            scheme = setScheme;
             if (leftImg == null)
             {
                 /*
@@ -251,7 +253,7 @@ namespace CoverColorSaber.Settings
                 col1Img.material = leftImg.material;
                 var col1Toggle = col1.GetComponent<Toggle>();
                 col1Toggle.group = group;
-                col1Toggle.onValueChanged.AddListener(new UnityAction<bool>( value => { if (value) currentPaletteIndex = 0; } ));
+                col1Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 0; });
 
                 col2 = Instantiate(templateImg, colors.transform, false);
                 Destroy(col2.transform.Find("Icon").gameObject);
@@ -262,7 +264,7 @@ namespace CoverColorSaber.Settings
                 col2Img.material = leftImg.material;
                 var col2Toggle = col2.GetComponent<Toggle>();
                 col2Toggle.group = group;
-                col2Toggle.onValueChanged.AddListener(new UnityAction<bool>(value => { if (value) currentPaletteIndex = 1; }));
+                col2Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 1; });
 
                 col3 = Instantiate(templateImg, colors.transform, false);
                 Destroy(col3.transform.Find("Icon").gameObject);
@@ -273,7 +275,7 @@ namespace CoverColorSaber.Settings
                 col3Img.material = leftImg.material;
                 var col3Toggle = col3.GetComponent<Toggle>();
                 col3Toggle.group = group;
-                col3Toggle.onValueChanged.AddListener(new UnityAction<bool>(value => { if (value) currentPaletteIndex = 2; }));
+                col3Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 2; });
 
                 col4 = Instantiate(templateImg, colors.transform, false);
                 Destroy(col4.transform.Find("Icon").gameObject);
@@ -284,7 +286,7 @@ namespace CoverColorSaber.Settings
                 col4Img.material = leftImg.material;
                 var col4Toggle = col4.GetComponent<Toggle>();
                 col4Toggle.group = group;
-                col4Toggle.onValueChanged.AddListener(new UnityAction<bool>(value => { if (value) currentPaletteIndex = 3; }));
+                col4Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 3; });
 
                 col5 = Instantiate(templateImg, colors.transform, false);
                 Destroy(col5.transform.Find("Icon").gameObject);
@@ -295,11 +297,11 @@ namespace CoverColorSaber.Settings
                 col5Img.material = leftImg.material;
                 var col5Toggle = col5.GetComponent<Toggle>();
                 col5Toggle.group = group;
-                col5Toggle.onValueChanged.AddListener(new UnityAction<bool>(value => { if (value) currentPaletteIndex = 4; }));
+                col5Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 4; });
 
                 group.SetAllTogglesOff();
 
-                var setButton = CreateUIButton("sortBy", (RectTransform)parent3, "PracticeButton", new Vector2(-25f, 0f), new Vector2(10, 0.5f), () =>
+                var setButton = CreateUIButton("setColor", (RectTransform)parent3, "PracticeButton", new Vector2(-25f, 0f), new Vector2(10, 0.5f), () =>
                 {
                     SetVal(currentPaletteIndex);
                 }, "Set");
@@ -314,13 +316,13 @@ namespace CoverColorSaber.Settings
             col4Img.color = currentPaletteColors[3].UnityColor;
             col5Img.color = currentPaletteColors[4].UnityColor;
 
-            leftImg.color = setScheme.saberAColor;
-            rightImg.color = setScheme.saberBColor;
-            obsImg.color = setScheme.obstaclesColor;
+            leftImg.color = scheme.saberAColor;
+            rightImg.color = scheme.saberBColor;
+            obsImg.color = scheme.obstaclesColor;
 
-            leftImgIcon.color = InvertColor(setScheme.saberAColor);
-            rightImgIcon.color = InvertColor(setScheme.saberBColor);
-            obsImgIcon.color = InvertColor(setScheme.obstaclesColor); 
+            leftImgIcon.color = InvertColor(scheme.saberAColor);
+            rightImgIcon.color = InvertColor(scheme.saberBColor);
+            obsImgIcon.color = InvertColor(scheme.obstaclesColor); 
         }
     }
 }

@@ -16,7 +16,7 @@ namespace CoverColorSaber
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        private static IPALogger Log { get; set; }
+        internal static IPALogger Log { get; set; }
 
         [Init]
         public void Init(IPALogger logger, IPA.Config.Config config)
