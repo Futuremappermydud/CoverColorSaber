@@ -27,8 +27,6 @@ namespace CoverColorSaber.Settings
         private string songName;
         public string SongName
         {
-            
-            get => songName;
             set
             {
                 songName = value;

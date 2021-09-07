@@ -16,28 +16,25 @@ namespace CoverColorSaber
     {
         internal static readonly ConcurrentDictionary<string, ColorScheme> Cache = new ConcurrentDictionary<string, ColorScheme>();
         private static readonly ConcurrentDictionary<string, List<QuantizedColor>> PaletteCache = new ConcurrentDictionary<string, List<QuantizedColor>>();
-        //TODO: Implement automatic warmth/coldness detection
-        /*
-        private static float GetWarmDistance(UnityEngine.Color a, UnityEngine.Color b)
-        {
-            return (Mathf.Abs(a.r - b.r)+Mathf.Abs(a.g - b.g)*0.5f+Mathf.Abs(a.b - b.b)*0.5f)/3f;
-        }
 
-        private static float GetColdDistance(UnityEngine.Color a, UnityEngine.Color b)
+        private static float GetWarmth(UnityEngine.Color col)
         {
-            return (Mathf.Abs(a.r - b.r)*0.5f+Mathf.Abs(a.g - b.g)*0.5f+Mathf.Abs(a.b - b.b))/3f;
+            float n = ((0.23881f) * col.r + (0.25499f) * col.g + (-0.58291f) * col.b) / ((0.11109f) * col.r + (-0.85406f) * col.g + (0.52289f) * col.b);
+            float cct = (449f * Mathf.Pow(n, 3) + 3525f * Mathf.Pow(n, 2) + 6823.3f * n + 5520.33f);
+            return cct;
         }
 
         private static UnityEngine.Color GetWarmestColor(List<QuantizedColor> colors)
         {
             var warmestColor = new UnityEngine.Color(0f, 128f, 255f);
+            var warmestWarmth = 0f;
             foreach (var t in colors)
             {
-                var dist = GetWarmDistance(warmestColor, t.UnityColor);
-                var dist2 = GetWarmDistance(UnityEngine.Color.red, warmestColor);
-                if (dist < dist2)
+                float warmth = GetWarmth(t.UnityColor);
+                if (warmestWarmth < warmth)
                 {
                     warmestColor = t.UnityColor;
+                    warmestWarmth = warmth;
                 }
             }
             return warmestColor;
@@ -45,18 +42,19 @@ namespace CoverColorSaber
         
         internal static UnityEngine.Color GetColdestColor(List<QuantizedColor> colors)
         {
-            var warmestColor = new UnityEngine.Color(255f, 128f, 0f);
+            var warmestColor = new UnityEngine.Color(0f, 128f, 255f);
+            var warmestWarmth = 1000000000000f;
             foreach (var t in colors)
             {
-                var dist = GetWarmDistance(warmestColor, t.UnityColor);
-                var dist2 = GetWarmDistance(UnityEngine.Color.blue, warmestColor);
-                if (dist < dist2)
+                float warmth = GetWarmth(t.UnityColor);
+                if (warmestWarmth > warmth)
                 {
                     warmestColor = t.UnityColor;
+                    warmestWarmth = warmth;
                 }
             }
             return warmestColor;
-        }*/
+        }
         public static async Task<ColorDataResult> GetSchemeFromCoverImage(Texture2D tex, string levelID)
         {
             var result = new ColorDataResult();
