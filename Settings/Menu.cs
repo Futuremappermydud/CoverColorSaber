@@ -227,14 +227,14 @@ namespace CoverColorSaber.Settings
 
                 group.SetAllTogglesOff(); 
 
-                SongCover = Instantiate(Resources.FindObjectsOfTypeAll<LevelBar>().First((LevelBar a)=> { return a.transform.parent.name == "LevelDetail"; }).transform.Find("SongArtwork").GetComponent<ImageView>(), SongInfo.transform);
+                /*SongCover = Instantiate(Resources.FindObjectsOfTypeAll<GameObject>().First((GameObject a)=> { return a.name == "SongArtwork" && a.activeInHierarchy; }).GetComponent<ImageView>(), SongInfo.transform);
                 SongCover.transform.SetAsFirstSibling();
                 (SongCover.transform as RectTransform).sizeDelta *= 2f;
                 SongCover.GetComponent<LayoutElement>().preferredHeight = 10f;
-                SongCover.GetComponent<LayoutElement>().preferredWidth = 10f;
+                SongCover.GetComponent<LayoutElement>().preferredWidth = 10f;*/
             }
-            if (sprite != null)
-                SongCover.sprite = sprite;
+            //if (sprite != null)
+            //    SongCover.sprite = sprite;
 
             col1Img.color = currentPaletteColors[0].UnityColor;
             col2Img.color = currentPaletteColors[1].UnityColor;
