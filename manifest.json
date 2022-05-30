@@ -3,9 +3,9 @@
   "id": "CoverColorSaber",
   "name": "Cover Color Saber",
   "author": "FutureMapper",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Takes the colors from the song cover and makes a usable color scheme.",
-  "gameVersion": "1.17.0",
+  "gameVersion": "1.22.0",
   "dependsOn": {
     "BSIPA": "^4.1.0",
     "BS Utils": "^1.10.0",

@@ -62,9 +62,10 @@ namespace CoverColorSaber
         private static async void LevelSelected(LevelCollectionViewController lcvc, IPreviewBeatmapLevel level)
         {
             Texture2D tex;
+            Sprite sprite = (await level.GetCoverImageAsync(System.Threading.CancellationToken.None));
             try
             {
-                tex = (await level.GetCoverImageAsync(System.Threading.CancellationToken.None)).texture;
+                tex = sprite.texture;
             }
             catch
             {
@@ -80,7 +81,7 @@ namespace CoverColorSaber
             await Task.Run(async () => { var data = await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID); scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, data.Scheme); colors = data.Colors; });
 
             Settings.Menu.instance.SongName = level.songName;
-            Settings.Menu.instance.SetColors(colors, scheme, tex, level.levelID);
+            Settings.Menu.instance.SetColors(colors, scheme, sprite, level.levelID);
         }
     }
 }
