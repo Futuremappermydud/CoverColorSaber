@@ -90,7 +90,6 @@ namespace CoverColorSaber
             var colors = new List<ColorThief.QuantizedColor>();
             await Task.Run(async () => { var data = await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID); scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, data.Scheme); colors = data.Colors; });
             Log.Info(colors[0].UnityColor.ToString());
-            System.IO.File.WriteAllBytes(System.IO.Path.Combine(IPA.Utilities.UnityGame.InstallPath, "bruh.png"), ImageConversion.EncodeToPNG(tex));
             Settings.Menu.instance.SongName = level.songName;
             Settings.Menu.instance.SetColors(colors, scheme, sprite, level.levelID);
         }
