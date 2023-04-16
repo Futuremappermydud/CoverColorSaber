@@ -3,13 +3,13 @@
     <vertical id='AllColors'>
     </vertical>
     <button id='toggle' text="Set" active='~songSelected' font-size="5" pref-height="8" on-click="SetVal" pref-width="10"/>
-    <vertical id='Song' spacing='10' vertical-fit='PreferredSize' align='Center' min-width='20'>
+    <vertical id='Song' spacing='10' vertical-fit='PreferredSize' child-align='MiddleCenter' min-width='20' child-control-width='False'>
       <horizontal id='SongInfo' spacing='6'>
         <text id='SongNameText' text='No Song Selected' font-size='4.5' color='white' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' align='Center'/>
       </horizontal>
       <horizontal id='Colors' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
       </horizontal>
-      <checkbox-setting text='Enabled' preferred-width='34' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
+      <checkbox-setting text='Enabled' size-delta-x='34' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
     </vertical>
   </horizontal>
 </bg>

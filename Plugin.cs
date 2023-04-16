@@ -23,7 +23,6 @@ namespace CoverColorSaber
         {
             PluginConfig.Instance = config.Generated<PluginConfig>();
             Log = logger;
-            Log.Info("CoverColorSaber initialized.");
             new Harmony("CoverSaber").PatchAll(Assembly.GetExecutingAssembly());
             GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Settings.Panel.bsml", Settings.Menu.instance);
         }
@@ -68,7 +67,6 @@ namespace CoverColorSaber
 
         private static async void LevelSelected(LevelCollectionViewController lcvc, IPreviewBeatmapLevel level)
         {
-            Log.Info(level.songName);
             Texture2D tex;
             Sprite sprite = (await level.GetCoverImageAsync(System.Threading.CancellationToken.None));
             try
@@ -84,13 +82,10 @@ namespace CoverColorSaber
                 tex = GetFromUnreadable(tex, InvertAtlas(sprite.textureRect));
             }
 
-            Log.Info(sprite.textureRect.ToString());
-
             var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", false, Color.white, Color.white, Color.white, Color.white, true, Color.white, Color.white, Color.white);
             var colors = new List<ColorThief.QuantizedColor>();
             await Task.Run(async () => { var data = await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID); scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, data.Scheme); colors = data.Colors; });
-            Log.Info(colors[0].UnityColor.ToString());
-            System.IO.File.WriteAllBytes(System.IO.Path.Combine(IPA.Utilities.UnityGame.InstallPath, "bruh.png"), ImageConversion.EncodeToPNG(tex));
+
             Settings.Menu.instance.SongName = level.songName;
             Settings.Menu.instance.SetColors(colors, scheme, sprite, level.levelID);
         }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using BeatSaberMarkupLanguage.Attributes;
+using ColorThief;
 using CoverColorSaber.Configuration;
+using CoverColorSaber.Util;
 using HMUI;
 using IPA.Utilities;
 using TMPro;
@@ -12,38 +15,32 @@ using UnityEngine.UI;
 
 namespace CoverColorSaber.Settings
 {
-    //super monkas class
     internal class Menu : PersistentSingleton<Menu>
     {
         [UIComponent("SongNameText")]
-        // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private TextMeshProUGUI songNameText = null;
 
-        // ReSharper disable once FieldCanBeMadeReadOnly.Local
-        private ImageView SongCover = null;
-
         [UIObject("toggle")]
-#pragma warning disable 414
         private GameObject toggle = null;
 
         [UIObject("AllColors")]
         private GameObject AllColors = null;
 
-        [UIObject("SongInfo")]
-        private GameObject SongInfo = null;
-#pragma warning restore 414
-
+        [UIValue("songSelected")]
+        public bool songSelected
+        {
+            get => songName != "";
+        }
         private string songName;
         public string SongName
         {
             set
             {
                 songName = value;
-                songNameText.text = songName;
-                //Plugin.Log.Info("Settings Song Name to " + value);
+                songNameText.text = value;
             }
         }
-        
+
         [UIValue("enabled")]
         public bool SchemeEnabled
         { 
@@ -51,55 +48,80 @@ namespace CoverColorSaber.Settings
             set => PluginConfig.Instance.Enabled = value;
         }
 
-        [UIValue("songSelected")]
-        public bool songSelected
-        {
-            get => songName != "";
-        }
-
         [UIObject("Colors")] private readonly GameObject colors = null;
 
-        private ImageView leftImg;
-        private ImageView rightImg;
-        private ImageView obsImg;
-        private ImageView leftImgIcon;
-        private ImageView rightImgIcon;
-        private ImageView obsImgIcon;
-        private ColorScheme scheme;
-        private string currentlevelID;
-        private int currentPaletteIndex;
-        private RectTransform paletteRect;
-        private GameObject templateImg;
-        private GameObject obsTemplateImg;
-        private List<ColorThief.QuantizedColor> currentPaletteColors = new List<ColorThief.QuantizedColor>();
-        private string selected = "saberA";
+        private static ImageView leftImg;
+        private static ImageView rightImg;
+        private static ImageView obsImg;
+        private static ImageView leftImgIcon;
+        private static ImageView rightImgIcon;
+        private static ImageView obsImgIcon;
+        private static ColorScheme scheme;
+        private static string currentlevelID;
+        private static int currentPaletteIndex;
+        private static RectTransform paletteRect;
+        private static GameObject templateImg;
+        private static GameObject obsTemplateImg;
+        private static List<QuantizedColor> currentPaletteColors = new List<QuantizedColor>();
+        private static string selected = "saberA";
 
-        //Sorry
-        private GameObject col1;
-        private ImageView col1Img;
-        private GameObject col2;
-        private ImageView col2Img;
-        private GameObject col3;
-        private ImageView col3Img;
-        private GameObject col4;
-        private ImageView col4Img;
-        private GameObject col5;
-        private ImageView col5Img;
+        private static GameObject col1;
+        private static ImageView col1Img;
+        private static GameObject col2;
+        private static ImageView col2Img;
+        private static GameObject col3;
+        private static ImageView col3Img;
+        private static GameObject col4;
+        private static ImageView col4Img;
+        private static GameObject col5;
+        private static ImageView col5Img;
         
         [UIAction("SetVal")]
         public void SetVal()
         {
-            //this feels really monkas
+            //bad
             scheme.SetField("_" + selected + "Color", currentPaletteColors[currentPaletteIndex].UnityColor);
-            SetColors(currentPaletteColors ?? new List<ColorThief.QuantizedColor>(), scheme, null, currentlevelID);
-        }
-        Color InvertColor(Color color) {
-            return new Color(1.0f-color.r, 1.0f-color.g, 1.0f-color.b);
+            SetColors(currentPaletteColors ?? new List<QuantizedColor>(), scheme, null, currentlevelID);
         }
         public void ToggleSelected(bool value, Toggle tgle)
         {
             if (!value) return;
             selected = tgle.gameObject.name;
+        }
+        public double getLuminance(UnityEngine.Color color)
+        {
+            double r = Math.Pow(color.r, 2.2f);
+            double g = Math.Pow(color.g, 2.2f);
+            double b = Math.Pow(color.b, 2.2f);
+            return 0.2126 * r + 0.7151 * g + 0.0721 * b;
+        }
+
+        public double getContrastRation(UnityEngine.Color color1, UnityEngine.Color color2) {
+            var l1 = getLuminance(color1);
+            var l2 = getLuminance(color2);
+            var cr = (l1 > l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05);
+            return cr;
+        }
+
+        public UnityEngine.Color getMostReadable(UnityEngine.Color color)
+        {
+            var cr = new Dictionary<string, Tuple<double, UnityEngine.Color>>();
+            for (int i = 0; i < PreDefColors.colors.Count; i++)
+            {
+                UnityEngine.Color x = PreDefColors.colors.Values.ElementAt(i) / 255f;
+                string name = PreDefColors.colors.Keys.ElementAt(i);
+                if (name == "")
+                    continue;
+
+                //using contrast Ration as key gave errors since i guess some colors give the same ration sometimes;
+                var ret = (getContrastRation(color, x), x);
+                cr.Add(name, ret.ToTuple());
+            }
+            var sorted = cr.OrderBy(x => x.Value.Item1).Reverse().ToDictionary(x => x.Key, x => x.Value);
+            var mostReadble = sorted.First((x) => { return x.Value.Item1 > 0f; });
+            var newColor = new UnityEngine.Color(mostReadble.Value.Item2.r, mostReadble.Value.Item2.g, mostReadble.Value.Item2.b, 1.0f);
+            //Console.WriteLine(mostReadble.Key + ": " + ColorUtility.ToHtmlStringRGB(color) + " " + ColorUtility.ToHtmlStringRGB(newColor) + " " + mostReadble.Value.Item1);
+            return newColor;
         }
 
         public void SetColors(List<ColorThief.QuantizedColor> paletteColors, ColorScheme setScheme, Sprite sprite, string levelID)
@@ -225,16 +247,8 @@ namespace CoverColorSaber.Settings
                 col5Toggle.group = group;
                 col5Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 4; });
 
-                group.SetAllTogglesOff(); 
-
-                /*SongCover = Instantiate(Resources.FindObjectsOfTypeAll<GameObject>().First((GameObject a)=> { return a.name == "SongArtwork" && a.activeInHierarchy; }).GetComponent<ImageView>(), SongInfo.transform);
-                SongCover.transform.SetAsFirstSibling();
-                (SongCover.transform as RectTransform).sizeDelta *= 2f;
-                SongCover.GetComponent<LayoutElement>().preferredHeight = 10f;
-                SongCover.GetComponent<LayoutElement>().preferredWidth = 10f;*/
+                group.SetAllTogglesOff();
             }
-            //if (sprite != null)
-            //    SongCover.sprite = sprite;
 
             col1Img.color = currentPaletteColors[0].UnityColor;
             col2Img.color = currentPaletteColors[1].UnityColor;
@@ -246,9 +260,9 @@ namespace CoverColorSaber.Settings
             rightImg.color = scheme.saberBColor;
             obsImg.color = scheme.obstaclesColor;
 
-            leftImgIcon.color = InvertColor(scheme.saberAColor);
-            rightImgIcon.color = InvertColor(scheme.saberBColor);
-            obsImgIcon.color = InvertColor(scheme.obstaclesColor); 
+            leftImgIcon.color = getMostReadable(scheme.saberAColor);
+            rightImgIcon.color = getMostReadable(scheme.saberBColor);
+            obsImgIcon.color = getMostReadable(scheme.obstaclesColor); 
         }
     }
 }

@@ -146,7 +146,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BeatSaberExtensions.cs" />
     <Compile Include="Color Thief\ColorThieft.Shared\CMap.cs" />
     <Compile Include="Color Thief\ColorThieft.Shared\Color.cs" />
     <Compile Include="Color Thief\ColorThieft.Shared\HslColor.cs" />
@@ -160,6 +159,7 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\PreDefColors.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />

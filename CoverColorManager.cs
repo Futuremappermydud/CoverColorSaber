@@ -23,38 +23,6 @@ namespace CoverColorSaber
             float cct = (449f * Mathf.Pow(n, 3) + 3525f * Mathf.Pow(n, 2) + 6823.3f * n + 5520.33f);
             return cct;
         }
-
-        private static UnityEngine.Color GetWarmestColor(List<QuantizedColor> colors)
-        {
-            var warmestColor = new UnityEngine.Color(0f, 128f, 255f);
-            var warmestWarmth = 0f;
-            foreach (var t in colors)
-            {
-                float warmth = GetWarmth(t.UnityColor);
-                if (warmestWarmth < warmth)
-                {
-                    warmestColor = t.UnityColor;
-                    warmestWarmth = warmth;
-                }
-            }
-            return warmestColor;
-        }
-        
-        internal static UnityEngine.Color GetColdestColor(List<QuantizedColor> colors)
-        {
-            var warmestColor = new UnityEngine.Color(0f, 128f, 255f);
-            var warmestWarmth = 1000000000000f;
-            foreach (var t in colors)
-            {
-                float warmth = GetWarmth(t.UnityColor);
-                if (warmestWarmth > warmth)
-                {
-                    warmestColor = t.UnityColor;
-                    warmestWarmth = warmth;
-                }
-            }
-            return warmestColor;
-        }
         public static async Task<ColorDataResult> GetSchemeFromCoverImage(Texture2D tex, string levelID)
         {
             var result = new ColorDataResult();
