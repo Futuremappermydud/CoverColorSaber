@@ -85,7 +85,6 @@ namespace CoverColorSaber
             var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", false, Color.white, Color.white, Color.white, Color.white, true, Color.white, Color.white, Color.white);
             var colors = new List<ColorThief.QuantizedColor>();
             await Task.Run(async () => { var data = await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID); scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, data.Scheme); colors = data.Colors; });
-
             Settings.Menu.instance.SongName = level.songName;
             Settings.Menu.instance.SetColors(colors, scheme, sprite, level.levelID);
         }
