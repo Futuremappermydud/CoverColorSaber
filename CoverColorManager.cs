@@ -43,8 +43,6 @@ namespace CoverColorSaber
 
             await Task.Run(() => { colors = thief.GetPalette(tex); });
             colors.Sort((x, y) => y.Population.CompareTo(x.Population));
-            //var leftColor = GetWarmestColor(colors);
-            //var rightColor = GetColdestColor(colors);
             var leftColor = colors[0].UnityColor;
             var rightColor = colors[1].UnityColor;
             var obsColor = colors[2].UnityColor;

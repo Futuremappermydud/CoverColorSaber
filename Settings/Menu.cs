@@ -80,8 +80,9 @@ namespace CoverColorSaber.Settings
         public void SetVal()
         {
             //bad
+            if (currentPaletteColors.Count < 1) return;
             scheme.SetField("_" + selected + "Color", currentPaletteColors[currentPaletteIndex].UnityColor);
-            SetColors(currentPaletteColors ?? new List<QuantizedColor>(), scheme, null, currentlevelID);
+            SetColors(currentPaletteColors ?? new List<QuantizedColor>(), scheme, currentlevelID);
         }
         public void ToggleSelected(bool value, Toggle tgle)
         {
@@ -105,26 +106,9 @@ namespace CoverColorSaber.Settings
 
         public UnityEngine.Color getMostReadable(UnityEngine.Color color)
         {
-            var cr = new Dictionary<string, Tuple<double, UnityEngine.Color>>();
-            for (int i = 0; i < PreDefColors.colors.Count; i++)
-            {
-                UnityEngine.Color x = PreDefColors.colors.Values.ElementAt(i) / 255f;
-                string name = PreDefColors.colors.Keys.ElementAt(i);
-                if (name == "")
-                    continue;
-
-                //using contrast Ration as key gave errors since i guess some colors give the same ration sometimes;
-                var ret = (getContrastRation(color, x), x);
-                cr.Add(name, ret.ToTuple());
-            }
-            var sorted = cr.OrderBy(x => x.Value.Item1).Reverse().ToDictionary(x => x.Key, x => x.Value);
-            var mostReadble = sorted.First((x) => { return x.Value.Item1 > 0f; });
-            var newColor = new UnityEngine.Color(mostReadble.Value.Item2.r, mostReadble.Value.Item2.g, mostReadble.Value.Item2.b, 1.0f);
-            //Console.WriteLine(mostReadble.Key + ": " + ColorUtility.ToHtmlStringRGB(color) + " " + ColorUtility.ToHtmlStringRGB(newColor) + " " + mostReadble.Value.Item1);
-            return newColor;
+            return getContrastRation(color, UnityEngine.Color.black) > getContrastRation(color, UnityEngine.Color.white) ? UnityEngine.Color.black : UnityEngine.Color.black;
         }
-
-        public void SetColors(List<ColorThief.QuantizedColor> paletteColors, ColorScheme setScheme, Sprite sprite, string levelID)
+        public void SetColors(List<ColorThief.QuantizedColor> paletteColors, ColorScheme setScheme, string levelID)
         {
             toggle.GetComponent<Button>().interactable = true;
             currentlevelID = levelID;
@@ -175,7 +159,6 @@ namespace CoverColorSaber.Settings
 
                 obsImgIcon.sprite = obsTemplateImg.transform.Find("Icon").GetComponent<ImageView>().sprite;
 
-                //Destroy(Use);
                 var layout = colors.GetComponent<HorizontalLayoutGroup>();
                 layout.childForceExpandWidth = false;
                 layout.childForceExpandHeight = false;
@@ -183,9 +166,6 @@ namespace CoverColorSaber.Settings
                 layout.childControlWidth = false;
                 layout.childAlignment = TextAnchor.MiddleCenter;
 
-                //Destroy(Colors.GetComponent<LayoutElement>());
-                //Destroy(Colors.GetComponent<ContentSizeFitter>());
-                //layout.padding = new RectOffset(1, 1, 5, -1);
                 layout.spacing = 2.5f;
                 colors.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
            

@@ -15,6 +15,11 @@ namespace ColorThief
         public int Population { get; private set; }
         public bool IsDark { get; private set; }
 
+        public override string ToString()
+        {
+            return "(" + UnityColor.r * 255 + ", " + UnityColor.g * 255 + ", " + UnityColor.b * 255 + ")";
+		}
+
         public UnityEngine.Color UnityColor
         {
             get
