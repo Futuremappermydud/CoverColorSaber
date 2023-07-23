@@ -1,15 +1,15 @@
 ﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
   <horizontal horizontal-fit='PreferredSize' spacing='8'>
-    <vertical id='AllColors'>
+    <vertical id='all-colors'>
     </vertical>
-    <button id='toggle' text="Set" active='~songSelected' font-size="5" pref-height="8" on-click="SetVal" pref-width="10"/>
-    <vertical id='Song' spacing='10' vertical-fit='PreferredSize' child-align='MiddleCenter' min-width='20' child-control-width='False'>
-      <horizontal id='SongInfo' spacing='6'>
-        <text id='SongNameText' text='No Song Selected' font-size='4.5' color='white' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' align='Center'/>
+    <button id='set-button' text="Set" enabled="false" font-size="5" pref-height="8" on-click="set-val" pref-width="10"/>
+    <vertical id='song' spacing='10' vertical-fit='PreferredSize' child-align='MiddleCenter' min-width='20' child-control-width='False'>
+      <horizontal id='song-info' spacing='6'>
+        <text id='song-name-text' text='No Song Selected' font-size='4.5' color='white' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' align='Center'/>
       </horizontal>
-      <horizontal id='Colors' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+      <horizontal id='colors' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
       </horizontal>
-      <checkbox-setting text='Enabled' size-delta-x='34' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
+      <checkbox-setting text='enabled' size-delta-x='34' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' value='enabled' apply-on-change='true'/>
     </vertical>
   </horizontal>
 </bg>

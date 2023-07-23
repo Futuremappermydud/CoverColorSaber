@@ -60,7 +60,7 @@ namespace CoverColorSaber.Managers
 				colors = data.Colors;
 			});
 
-			_settingsMenu.SongName = level.songName;
+			_settingsMenu.SetSongName(level.songName);
 			_settingsMenu.SetColors(colors, scheme, level.levelID);
 		}
 
