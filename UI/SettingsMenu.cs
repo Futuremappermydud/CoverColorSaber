@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.GameplaySetup;
 using ColorThief;
 using CoverColorSaber.Configuration;
-using CoverColorSaber.Util;
 using HMUI;
 using IPA.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Zenject;
 
 namespace CoverColorSaber.Settings
 {
-    internal class Menu : PersistentSingleton<Menu>
+	public class SettingsMenu
     {
         [UIComponent("SongNameText")]
         private TextMeshProUGUI songNameText = null;
@@ -43,39 +44,45 @@ namespace CoverColorSaber.Settings
 
         [UIValue("enabled")]
         public bool SchemeEnabled
-        { 
+        {
             get => PluginConfig.Instance.Enabled;
             set => PluginConfig.Instance.Enabled = value;
         }
 
         [UIObject("Colors")] private readonly GameObject colors = null;
 
-        private static ImageView leftImg;
-        private static ImageView rightImg;
-        private static ImageView obsImg;
-        private static ImageView leftImgIcon;
-        private static ImageView rightImgIcon;
-        private static ImageView obsImgIcon;
-        private static ColorScheme scheme;
-        private static string currentlevelID;
-        private static int currentPaletteIndex;
-        private static RectTransform paletteRect;
-        private static GameObject templateImg;
-        private static GameObject obsTemplateImg;
-        private static List<QuantizedColor> currentPaletteColors = new List<QuantizedColor>();
-        private static string selected = "saberA";
+        private ImageView leftImg;
+        private ImageView rightImg;
+        private ImageView obsImg;
+        private ImageView leftImgIcon;
+        private ImageView rightImgIcon;
+        private ImageView obsImgIcon;
+        private ColorScheme scheme;
+        private string currentlevelID;
+        private int currentPaletteIndex;
+        private RectTransform paletteRect;
+        private GameObject templateImg;
+        private GameObject obsTemplateImg;
+        private List<QuantizedColor> currentPaletteColors = new List<QuantizedColor>();
+        private string selected = "saberA";
 
-        private static GameObject col1;
-        private static ImageView col1Img;
-        private static GameObject col2;
-        private static ImageView col2Img;
-        private static GameObject col3;
-        private static ImageView col3Img;
-        private static GameObject col4;
-        private static ImageView col4Img;
-        private static GameObject col5;
-        private static ImageView col5Img;
-        
+        private GameObject col1;
+        private ImageView col1Img;
+        private GameObject col2;
+        private ImageView col2Img;
+        private GameObject col3;
+        private ImageView col3Img;
+        private GameObject col4;
+        private ImageView col4Img;
+        private GameObject col5;
+        private ImageView col5Img;
+
+        [Inject]
+        private void Construct()
+        {
+			GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.UI.SettingsMenu.bsml", this);
+		}
+
         [UIAction("SetVal")]
         public void SetVal()
         {
@@ -89,28 +96,10 @@ namespace CoverColorSaber.Settings
             if (!value) return;
             selected = tgle.gameObject.name;
         }
-        public double getLuminance(UnityEngine.Color color)
-        {
-            double r = Math.Pow(color.r, 2.2f);
-            double g = Math.Pow(color.g, 2.2f);
-            double b = Math.Pow(color.b, 2.2f);
-            return 0.2126 * r + 0.7151 * g + 0.0721 * b;
-        }
 
-        public double getContrastRation(UnityEngine.Color color1, UnityEngine.Color color2) {
-            var l1 = getLuminance(color1);
-            var l2 = getLuminance(color2);
-            var cr = (l1 > l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05);
-            return cr;
-        }
-
-        public UnityEngine.Color getMostReadable(UnityEngine.Color color)
+        public void SetColors(List<QuantizedColor> paletteColors, ColorScheme setScheme, string levelID)
         {
-            return getContrastRation(color, UnityEngine.Color.black) > getContrastRation(color, UnityEngine.Color.white) ? UnityEngine.Color.black : UnityEngine.Color.black;
-        }
-        public void SetColors(List<ColorThief.QuantizedColor> paletteColors, ColorScheme setScheme, string levelID)
-        {
-            toggle.GetComponent<Button>().interactable = true;
+			toggle.GetComponent<Button>().interactable = true;
             currentlevelID = levelID;
             currentPaletteColors = paletteColors;
             scheme = setScheme;
@@ -119,13 +108,13 @@ namespace CoverColorSaber.Settings
                 if(templateImg == null)
                 {
                     var orig = Resources.FindObjectsOfTypeAll<EditColorSchemeController>().First(x => x.name == "EditColorSchemeController").transform.Find("Content").Find("ColorSchemeColorsToggleGroup");
-                    templateImg = Instantiate(orig.Find("SaberA").gameObject);
-                    obsTemplateImg = Instantiate(orig.Find("Obstacles").gameObject);
-                    DontDestroyOnLoad(templateImg);
-                    DontDestroyOnLoad(obsTemplateImg);
+                    templateImg = GameObject.Instantiate(orig.Find("SaberA").gameObject);
+                    obsTemplateImg = GameObject.Instantiate(orig.Find("Obstacles").gameObject);
+					GameObject.DontDestroyOnLoad(templateImg);
+					GameObject.DontDestroyOnLoad(obsTemplateImg);
                 }
 
-                leftImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                leftImg = GameObject.Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
                 var parent = leftImg.transform.parent;
                 var hover = parent.gameObject.AddComponent<HoverHint>();
                 hover.text = "Left Saber/Left Lights Color";
@@ -135,7 +124,7 @@ namespace CoverColorSaber.Settings
                 leftToggle.onValueChanged.AddListener(b => { ToggleSelected(b, leftToggle); });
                 parent.gameObject.name = "saberA";
 
-                rightImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                rightImg = GameObject.Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
                 var parent1 = rightImg.transform.parent;
                 var hover2 = parent1.gameObject.AddComponent<HoverHint>();
                 hover2.text = "Right Saber/Right Lights Color";
@@ -144,7 +133,7 @@ namespace CoverColorSaber.Settings
                 rightToggle.onValueChanged.AddListener(b => { ToggleSelected(b, rightToggle); });
                 parent1.gameObject.name = "saberB";
 
-                obsImg = Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
+                obsImg = GameObject.Instantiate(templateImg, colors.transform, false).transform.Find("ColorImage").GetComponent<ImageView>();
                 var parent2 = obsImg.transform.parent;
                 var hover3 = parent2.gameObject.AddComponent<HoverHint>();
                 hover3.text = "Obstacle Color";
@@ -168,7 +157,7 @@ namespace CoverColorSaber.Settings
 
                 layout.spacing = 2.5f;
                 colors.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-           
+
 
                 paletteRect = AllColors.GetComponent<RectTransform>();
                 paletteRect.sizeDelta = new Vector2(20, 75);
@@ -181,9 +170,9 @@ namespace CoverColorSaber.Settings
                 vert.childControlWidth = false;
 
                 var group = paletteRect.gameObject.AddComponent<ToggleGroup>();
-                
-                col1 = Instantiate(templateImg, paletteRect.transform, false);
-                Destroy(col1.transform.Find("Icon").gameObject);
+
+                col1 = GameObject.Instantiate(templateImg, paletteRect.transform, false);
+				GameObject.Destroy(col1.transform.Find("Icon").gameObject);
                 col1Img = col1.transform.Find("ColorImage").GetComponent<ImageView>();
                 col1Img.sprite = leftImg.sprite;
                 col1Img.material = leftImg.material;
@@ -191,8 +180,8 @@ namespace CoverColorSaber.Settings
                 col1Toggle.group = group;
                 col1Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 0; });
 
-                col2 = Instantiate(templateImg, paletteRect.transform, false);
-                Destroy(col2.transform.Find("Icon").gameObject);
+                col2 = GameObject.Instantiate(templateImg, paletteRect.transform, false);
+				GameObject.Destroy(col2.transform.Find("Icon").gameObject);
                 col2Img = col2.transform.Find("ColorImage").GetComponent<ImageView>();
                 col2Img.sprite = leftImg.sprite;
                 col2Img.material = leftImg.material;
@@ -200,8 +189,8 @@ namespace CoverColorSaber.Settings
                 col2Toggle.group = group;
                 col2Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 1; });
 
-                col3 = Instantiate(templateImg, paletteRect.transform, false);
-                Destroy(col3.transform.Find("Icon").gameObject);
+                col3 = GameObject.Instantiate(templateImg, paletteRect.transform, false);
+				GameObject.Destroy(col3.transform.Find("Icon").gameObject);
                 col3Img = col3.transform.Find("ColorImage").GetComponent<ImageView>();
                 col3Img.sprite = leftImg.sprite;
                 col3Img.material = leftImg.material;
@@ -209,8 +198,8 @@ namespace CoverColorSaber.Settings
                 col3Toggle.group = group;
                 col3Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 2; });
 
-                col4 = Instantiate(templateImg, paletteRect.transform, false);
-                Destroy(col4.transform.Find("Icon").gameObject);
+                col4 = GameObject.Instantiate(templateImg, paletteRect.transform, false);
+				GameObject.Destroy(col4.transform.Find("Icon").gameObject);
                 col4Img = col4.transform.Find("ColorImage").GetComponent<ImageView>();
                 col4Img.sprite = leftImg.sprite;
                 col4Img.material = leftImg.material;
@@ -218,8 +207,8 @@ namespace CoverColorSaber.Settings
                 col4Toggle.group = group;
                 col4Toggle.onValueChanged.AddListener(value => { if (value) currentPaletteIndex = 3; });
 
-                col5 = Instantiate(templateImg, paletteRect.transform, false);
-                Destroy(col5.transform.Find("Icon").gameObject);
+                col5 = GameObject.Instantiate(templateImg, paletteRect.transform, false);
+				GameObject.Destroy(col5.transform.Find("Icon").gameObject);
                 col5Img = col5.transform.Find("ColorImage").GetComponent<ImageView>();
                 col5Img.sprite = leftImg.sprite;
                 col5Img.material = leftImg.material;
@@ -240,9 +229,9 @@ namespace CoverColorSaber.Settings
             rightImg.color = scheme.saberBColor;
             obsImg.color = scheme.obstaclesColor;
 
-            leftImgIcon.color = getMostReadable(scheme.saberAColor);
-            rightImgIcon.color = getMostReadable(scheme.saberBColor);
-            obsImgIcon.color = getMostReadable(scheme.obstaclesColor); 
+            leftImgIcon.color = UnityEngine.Color.white;
+            rightImgIcon.color = UnityEngine.Color.white;
+			obsImgIcon.color = UnityEngine.Color.white;
         }
     }
 }

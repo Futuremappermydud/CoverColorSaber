@@ -9,6 +9,8 @@ using BeatSaberMarkupLanguage.GameplaySetup;
 using System.Collections.Generic;
 using CoverColorSaber.Configuration;
 using IPA.Config.Stores;
+using SiraUtil.Zenject;
+using CoverColorSaber.Installers;
 
 namespace CoverColorSaber
 {
@@ -19,78 +21,13 @@ namespace CoverColorSaber
         internal static IPALogger Log { get; set; }
 
         [Init]
-        public void Init(IPALogger logger, IPA.Config.Config config)
+        public void Init(IPALogger logger, IPA.Config.Config config, Zenjector zenjector)
         {
             PluginConfig.Instance = config.Generated<PluginConfig>();
             Log = logger;
-            new Harmony("CoverSaber").PatchAll(Assembly.GetExecutingAssembly());
-            GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.Settings.Panel.bsml", Settings.Menu.instance);
-        }
-        [OnExit]
-        public void OnApplicationExit()
-        {
-            BSEvents.levelSelected -= LevelSelected;
-        }
-
-        [OnStart]
-        public void OnApplicationStart()
-        {
-            BSEvents.levelSelected += LevelSelected;
-        }
-
-        private static Rect InvertAtlas(Rect i)
-        {
-            Rect o = new Rect(i.x, i.y, i.width, i.height);
-            o.y = 2048 - o.y - 160;
-            return o;
-        }
-
-        private static Texture2D GetFromUnreadable(Texture2D tex, Rect rect)
-        {
-            var tmp = RenderTexture.GetTemporary(
-                                    tex.width,
-                                    tex.height,
-                                    0,
-                                    RenderTextureFormat.Default,
-                                    RenderTextureReadWrite.Linear);
-
-            Graphics.Blit(tex, tmp);
-            var previous = RenderTexture.active;
-            RenderTexture.active = tmp;
-            var myTexture2D = new Texture2D((int)rect.width, (int)rect.height);
-            myTexture2D.ReadPixels(rect, 0, 0);
-            myTexture2D.Apply();
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(tmp);
-            return myTexture2D;
-        }
-
-        private static async void LevelSelected(LevelCollectionViewController lcvc, IPreviewBeatmapLevel level)
-        {
-            Texture2D tex;
-            Sprite sprite = (await level.GetCoverImageAsync(System.Threading.CancellationToken.None));
-            try
-            {
-                tex = sprite.texture;
-            }
-            catch
-            {
-                tex = GetFromUnreadable((level as CustomPreviewBeatmapLevel)?.defaultCoverImage.texture, sprite.textureRect);
-            }
-            if (!(level is CustomPreviewBeatmapLevel))
-            {
-                tex = GetFromUnreadable(tex, InvertAtlas(sprite.textureRect));
-            }
-            else
-            {
-				tex = GetFromUnreadable(tex, sprite.textureRect);
-			}
-
-            var scheme = new ColorScheme("CoverSaber", "Cover Saber", true, "Cover Saber", false, Color.white, Color.white, Color.white, Color.white, true, Color.white, Color.white, Color.white);
-            var colors = new List<ColorThief.QuantizedColor>();
-            await Task.Run(async () => { var data = await CoverColorManager.GetSchemeFromCoverImage(tex, level.levelID); scheme = CoverColorManager.Cache.GetOrAdd(level.levelID, data.Scheme); colors = data.Colors; });
-            Settings.Menu.instance.SongName = level.songName;
-            Settings.Menu.instance.SetColors(colors, scheme, level.levelID);
+            zenjector.Install<CoverColorSaberAppInstaller>(Location.App);
+            zenjector.Install<CoverColorSaberMenuInstaller>(Location.Menu);
+            zenjector.Install<CoverColorSaberGameInstaller>(Location.StandardPlayer);
         }
     }
 }
