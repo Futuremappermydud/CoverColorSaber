@@ -11,5 +11,15 @@ namespace CoverColorSaber.Models
 	{
 		public ColorScheme Scheme;
 		public List<QuantizedColor> Colors;
+
+		public ColorDataResult()
+		{
+		}
+
+		public ColorDataResult(ColorScheme scheme, List<QuantizedColor> colors)
+		{
+			Scheme = scheme;
+			Colors = colors;
+		}
 	}
 }

@@ -20,7 +20,6 @@ namespace CoverColorSaber
 			Log = logger;
 			zenjector.Install<CoverColorSaberAppInstaller>(Location.App);
 			zenjector.Install<CoverColorSaberMenuInstaller>(Location.Menu);
-			zenjector.Install<CoverColorSaberGameInstaller>(Location.StandardPlayer);
 		}
 	}
 }

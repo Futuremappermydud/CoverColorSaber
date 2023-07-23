@@ -2,6 +2,7 @@
 using BeatSaberMarkupLanguage.GameplaySetup;
 using ColorThief;
 using CoverColorSaber.Configuration;
+using CoverColorSaber.Managers;
 using HMUI;
 using IPA.Utilities;
 using System.Collections.Generic;
@@ -49,9 +50,14 @@ namespace CoverColorSaber.Settings
 		private ToggleGroup paletteToggleGroup;
 		private ToggleGroup colorsToggleGroup;
 
+		private HoverHintController _hoverHintController;
+		private CacheManager _cacheManager;
+
 		[Inject]
-		private void Construct()
+		private void Construct(HoverHintController hoverHintController, CacheManager cacheManager)
 		{
+			_hoverHintController = hoverHintController;
+			_cacheManager = cacheManager;
 			GameplaySetup.instance.AddTab("Cover Color Saber", "CoverColorSaber.UI.SettingsMenu.bsml", this);
 		}
 
@@ -61,6 +67,8 @@ namespace CoverColorSaber.Settings
 			if (currentPaletteColors.Count < 1) return;
 			scheme.SetField("_" + selected + "Color", currentPaletteColors[currentPaletteIndex].UnityColor);
 			SetColors(currentPaletteColors ?? new List<QuantizedColor>(), scheme, currentlevelID);
+			_cacheManager.SetCache(currentlevelID, new Models.ColorDataResult(scheme, currentPaletteColors));
+
 		}
 		public void ToggleSelected(bool value, Toggle tgle)
 		{
@@ -148,11 +156,11 @@ namespace CoverColorSaber.Settings
 			var image = parent.transform.Find("ColorImage").GetComponent<ImageView>();
 			var hover = parent.gameObject.AddComponent<HoverHint>();
 			hover.text = hoverText;
-			hover.SetField("_hoverHintController", Resources.FindObjectsOfTypeAll<HoverHintController>().First());
+			hover.SetField("_hoverHintController", _hoverHintController);
 			var toggle = parent.GetComponent<Toggle>();
 			toggle.isOn = false;
 			toggle.group = colorsToggleGroup;
-			toggle.onValueChanged.AddListener(value => { ToggleSelected(value, toggle); });
+			toggle.onValueChanged.AddListener(value => ToggleSelected(value, toggle));
 			parent.gameObject.name = name;
 
 			var icon = parent.Find("Icon").GetComponent<ImageView>();

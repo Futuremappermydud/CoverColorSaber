@@ -173,7 +173,6 @@
     <Compile Include="Managers\CacheManager.cs" />
     <Compile Include="Managers\CoverColorManager.cs" />
     <Compile Include="Installers\CoverColorSaberAppInstaller.cs" />
-    <Compile Include="Installers\CoverColorSaberGameInstaller.cs" />
     <Compile Include="Installers\CoverColorSaberMenuInstaller.cs" />
     <Compile Include="Models\ColorDataResult.cs" />
     <Compile Include="UI\SettingsMenu.cs" />
